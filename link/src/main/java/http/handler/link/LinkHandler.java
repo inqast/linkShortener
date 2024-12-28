@@ -1,10 +1,8 @@
 package http.handler.link;
 
-import java.io.IOException;
-
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 
+import domain.link.Link;
 import http.handler.Handler;
 import http.request.link.CreateReq;
 import http.request.link.DeleteReq;
@@ -12,73 +10,68 @@ import http.request.link.GetReq;
 import http.request.link.UpdateReq;
 import http.resonse.link.CreateResp;
 import http.resonse.link.GetResp;
+import service.IService;
 
-public class LinkHandler extends Handler implements HttpHandler {
+public class LinkHandler extends Handler {
+    private IService service;
+
+    public LinkHandler(IService service) {
+        this.service = service;
+    }
+
     @Override
-    public void handle(HttpExchange t) throws IOException {
+    public String handleMethods(HttpExchange t) throws Exception {
         switch (t.getRequestMethod()) {
             case ("GET"):
-                handleGet(t);
-                break;
+                return handleGet(t);
             case ("POST"):
-                handleCreate(t);
-                break;
+                return handleCreate(t);
             case ("PATCH"):
-                handleUpdate(t);
-                break;
+                return handleUpdate(t);
             case ("DELETE"):
-                handleDelete(t);
-                break;
+                return handleDelete(t);
             default:
-                throw new AssertionError();
+                throw new AssertionError("unknown method");
         }
     }
 
-    private void handleGet(HttpExchange t) throws IOException {
+    private String handleGet(HttpExchange t) throws Exception {
         GetReq req = new GetReq(getPathParam(t.getRequestURI(), 2));
-        if (!req.isValid()) {
-            processInvalidRequest(t);
-
-            return;
-        }
-
-        GetResp resp = new GetResp("http://lala.jopa/lalsd");
+        req.validate();
     
-        processOK(t, resp.toJSON());
+        Link link = service.read(req.getHash());
+
+        GetResp resp = new GetResp(link.getLink());
+
+        return resp.toJSON();
     }
 
-    private void handleCreate(HttpExchange t) throws IOException {
+    private String handleCreate(HttpExchange t) throws Exception {
         CreateReq req = new CreateReq(readBody(t));
-        if (!req.isValid()) {
-            processInvalidRequest(t);
+        req.validate();
 
-            return;
-        }
+        String hash = service.create(req.getLink(), req.getUser(), req.getLimit());
 
-        CreateResp resp = new CreateResp("lalala", req.getUser());
-    
-        processOK(t, resp.toJSON());
+        CreateResp resp = new CreateResp(hash, req.getUser());
+
+        return resp.toJSON();
     }
 
-    private void handleUpdate(HttpExchange t) throws IOException {
+    private String handleUpdate(HttpExchange t) throws Exception {
         UpdateReq req = new UpdateReq(readBody(t));
-        if (!req.isValid()) {
-            processInvalidRequest(t);
+        req.validate();
 
-            return;
-        }
+        service.update(req.getHash(), req.getLink(), req.getUser(), req.getLimit());
 
-        processOK(t);
+        return emptyResult;
     }
 
-    private void handleDelete(HttpExchange t) throws IOException {
+    private String handleDelete(HttpExchange t) throws Exception {
         DeleteReq req = new DeleteReq(readBody(t));
-        if (!req.isValid()) {
-            processInvalidRequest(t);
+        req.validate();
 
-            return;
-        }
-        
-        processOK(t);
+        service.delete(req.getHash(), req.getUser());
+
+        return emptyResult;
     }
 }

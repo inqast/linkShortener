@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.json.JSONObject;
 
+import http.request.InvalidRequestException;
 import http.request.Request;
 
 public class IndexReq extends Request {
@@ -22,12 +23,10 @@ public class IndexReq extends Request {
     }
 
     @Override
-    public boolean isValid() {
+    public void validate() throws InvalidRequestException {
         if (user == null) {
-            return false;
+            throw new InvalidRequestException("invalid link");
         }
-
-        return true;
     }
 
     @Override

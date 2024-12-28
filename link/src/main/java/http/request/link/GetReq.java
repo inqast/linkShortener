@@ -2,6 +2,7 @@ package http.request.link;
 
 import org.json.JSONObject;
 
+import http.request.InvalidRequestException;
 import http.request.Request;
 
 public class GetReq extends Request {
@@ -12,12 +13,10 @@ public class GetReq extends Request {
     }
 
     @Override
-    public boolean isValid() {
+    public void validate() throws InvalidRequestException {
         if (hash.isEmpty()) {
-            return false;
+            throw new InvalidRequestException("invalid hash");        
         }
-
-        return true;
     }
 
     @Override

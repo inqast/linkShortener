@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.json.JSONObject;
 
+import http.request.InvalidRequestException;
 import http.request.Request;
 
 public class DeleteReq extends Request {
@@ -24,16 +25,14 @@ public class DeleteReq extends Request {
     }
 
     @Override
-    public boolean isValid() {
+    public void validate() throws InvalidRequestException {
         if (hash.isEmpty()) {
-            return false;
+            throw new InvalidRequestException("invalid hash");        
         }
 
         if (user == null) {
-            return false;
+            throw new InvalidRequestException("invalid user");        
         }
-
-        return true;
     }
 
     @Override

@@ -7,6 +7,8 @@ import com.sun.net.httpserver.HttpServer;
 import http.handler.dock.DocsHandler;
 import http.handler.link.IndexHandler;
 import http.handler.link.LinkHandler;
+import service.IService;
+import service.Service;
 
 
 public class Main {
@@ -19,9 +21,11 @@ public class Main {
             return;
         }
 
+        IService service = new Service();
+
         server.createContext("/docs", new DocsHandler());
-        server.createContext("/link", new LinkHandler());
-        server.createContext("/links", new IndexHandler());
+        server.createContext("/link", new LinkHandler(service));
+        server.createContext("/links", new IndexHandler(service));
 
         server.setExecutor(null); // creates a default executor
         server.start();

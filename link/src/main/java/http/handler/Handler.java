@@ -7,9 +7,32 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 
-import com.sun.net.httpserver.HttpExchange;
+import org.json.JSONObject;
 
-public abstract class Handler {
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+
+import service.exception.AcessException;
+import service.exception.NotFoundException;
+
+public abstract class Handler implements HttpHandler {
+    protected final String emptyResult = "";
+
+    protected abstract String handleMethods(HttpExchange t) throws Exception;
+
+    @Override
+    public void handle(HttpExchange t) throws IOException {
+        try {
+            processOK(t, handleMethods(t));
+        } catch (NotFoundException e) {
+            processNotFound(t);
+        } catch (AcessException e) {
+            processAcessDenied(t);
+        } catch (Exception e) {
+            processError(t, e.getMessage());
+        }
+    }
+
     protected static String getPathParam(URI uri, int position) {
         String[] parts = uri.getPath().split("/");
 
@@ -18,13 +41,6 @@ public abstract class Handler {
         }
 
         return "";
-    }
-
-    protected static void processOK(HttpExchange t)  throws IOException {
-        t.sendResponseHeaders(200, 0);
-
-        OutputStream os = t.getResponseBody();
-        os.close();
     }
 
     protected static void processOK(HttpExchange t, String responseString)  throws IOException {
@@ -38,10 +54,35 @@ public abstract class Handler {
         os.close();
     }
 
+    protected static void processNotFound(HttpExchange t)  throws IOException {
+        t.sendResponseHeaders(404, 0);
+
+        OutputStream os = t.getResponseBody();
+        os.close();
+    }
+
+    protected static void processAcessDenied(HttpExchange t)  throws IOException {
+        t.sendResponseHeaders(403, 0);
+
+        OutputStream os = t.getResponseBody();
+        os.close();
+    }
+
     protected static void processInvalidRequest(HttpExchange t)  throws IOException {
         t.sendResponseHeaders(400, 0);
 
         OutputStream os = t.getResponseBody();
+        os.close();
+    }
+
+    protected static void processError(HttpExchange t, String errorString)  throws IOException {
+        byte[] response = new JSONObject(new Error(errorString)).toString().getBytes(StandardCharsets.UTF_8);
+
+        t.getResponseHeaders().add("Content-Type", "application/json; charset=utf-8");
+        t.sendResponseHeaders(500, response.length);
+
+        OutputStream os = t.getResponseBody();
+        os.write(response);
         os.close();
     }
 
@@ -60,4 +101,18 @@ public abstract class Handler {
 
         return buf.toString();
     }
+
+    public static class Error {
+        private String message;
+
+        public Error(String message) {
+            this.message = message;
+        }
+
+        public String getMessage() {
+            return this.message;
+        }
+    }
+
+
 }

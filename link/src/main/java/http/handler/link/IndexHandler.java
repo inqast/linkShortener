@@ -1,32 +1,39 @@
 package http.handler.link;
 
-import java.io.IOException;
-
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
+import domain.link.Link;
 import http.handler.Handler;
 import http.request.link.IndexReq;
+import http.resonse.link.IndexResp;
+import service.IService;
 
 public class IndexHandler extends Handler implements HttpHandler {
-    @Override
-    public void handle(HttpExchange t) throws IOException {
-        StringBuilder responseBuilder = new StringBuilder();
+     private IService service;
 
+    public IndexHandler(IService service) {
+        this.service = service;
+    }
+
+    @Override
+    public String handleMethods(HttpExchange t) throws Exception {
         switch (t.getRequestMethod()) {
             case ("GET"):
-                IndexReq req = new IndexReq(getPathParam(t.getRequestURI(), 2));
-                if (!req.isValid()) {
-                    processInvalidRequest(t);
-
-                    return;
-                }
-    
-                processOK(t);
-                break;
+                return handleIndex(t);
             default:
-                throw new AssertionError();
+                throw new AssertionError("unknown method");
         }
     }
 
+    private String handleIndex(HttpExchange t) throws Exception {
+        IndexReq req = new IndexReq(getPathParam(t.getRequestURI(), 2));
+        req.validate();
+
+        Link[] links = service.index(req.getUser());
+
+        IndexResp resp = new IndexResp(links);
+
+        return resp.toJSON();
+    }
 }

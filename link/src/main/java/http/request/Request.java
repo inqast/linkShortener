@@ -5,7 +5,7 @@ import java.util.UUID;
 import org.json.JSONObject;
 
 public abstract class Request {
-    public abstract boolean isValid();
+    public abstract void validate() throws InvalidRequestException;
     public abstract String toJSON();
 
     protected String parseString(JSONObject obj, String key) {
