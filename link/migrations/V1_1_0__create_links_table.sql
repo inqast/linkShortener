@@ -1,5 +1,5 @@
 CREATE TABLE links (
-    hash CHAR(6) PRIMARY KEY,
+    hash int,
     link VARCHAR(256),
     owner UUID,
     usages_count INT,
@@ -7,4 +7,5 @@ CREATE TABLE links (
     deadline DATE
 );
 
+CREATE INDEX links_hashes ON links (hash); 
 CREATE INDEX links_owners ON links (owner); 

@@ -7,10 +7,10 @@ import org.json.JSONObject;
 import http.resonse.Response;
 
 public class CreateResp extends Response {
-    private String hash;
+    private int hash;
     private UUID user;
 
-    public CreateResp(String hash, UUID user) {
+    public CreateResp(int hash, UUID user) {
         this.hash = hash;
         this.user = user;
     }
@@ -22,7 +22,7 @@ public class CreateResp extends Response {
         return obj.toString();
     }
 
-    public String getHash() {
+    public int getHash() {
         return hash;
     }
 

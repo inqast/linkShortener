@@ -1,7 +1,10 @@
 package http.request;
 
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.UUID;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public abstract class Request {
@@ -11,26 +14,50 @@ public abstract class Request {
     protected String parseString(JSONObject obj, String key) {
         try {
             return obj.getString(key);
-        } catch (Exception e) {
+        } catch (JSONException e) {
             return "";
         }
     }
 
-    protected int parseInt(JSONObject obj, String key) {
+    protected int parseInt(String value) throws InvalidRequestException {
         try {
-            return obj.getInt(key);
+            return Integer.parseInt(value);
         } catch (Exception e) {
-            return 0;
+            throw new InvalidRequestException("wrong int format");
         }
     }
 
-    protected UUID parseUUID(JSONObject obj, String key) {
+    protected int parseInt(JSONObject obj, String key)  throws InvalidRequestException {
+        try {
+            return obj.getInt(key);
+        } catch (JSONException e) {
+            return 0;
+        } catch (Exception e) {
+            throw new InvalidRequestException("wrong int format");
+        }
+    }
+
+    protected UUID parseUUID(JSONObject obj, String key) throws InvalidRequestException {
         try {
             String s = obj.getString(key);
             
             return UUID.fromString(s);
-        } catch (Exception e) {
+        } catch (JSONException e) {
             return UUID.randomUUID();
+        } catch (Exception e) {
+            throw new InvalidRequestException("wrong UUID format");
+        }
+    }
+
+    protected Date parseDate(JSONObject obj, String key) throws InvalidRequestException {
+        try {
+            String s = obj.getString(key);
+            
+            return DateFormat.getInstance().parse(s);
+        } catch (JSONException e) {
+            return null;
+        } catch (Exception e) {
+            throw new InvalidRequestException("wrong date format, yyyy-mm-dd expected");
         }
     }
 }

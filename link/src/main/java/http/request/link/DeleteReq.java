@@ -5,13 +5,14 @@ import java.util.UUID;
 import org.json.JSONObject;
 
 import http.request.InvalidRequestException;
+import http.request.Keys;
 import http.request.Request;
 
 public class DeleteReq extends Request {
-    private String hash;
+    private int hash;
     private UUID user;
 
-    public DeleteReq(String body) {
+    public DeleteReq(String body) throws InvalidRequestException {
         JSONObject obj;
         try {
             obj = new JSONObject(body);
@@ -20,13 +21,13 @@ public class DeleteReq extends Request {
         }
         
 
-        hash = parseString(obj, "hash");
-        user = parseUUID(obj,"user");
+        hash = parseInt(obj, Keys.HASH);
+        user = parseUUID(obj, Keys.USER);
     }
 
     @Override
     public void validate() throws InvalidRequestException {
-        if (hash.isEmpty()) {
+        if (hash == 0) {
             throw new InvalidRequestException("invalid hash");        
         }
 
@@ -42,7 +43,7 @@ public class DeleteReq extends Request {
         return obj.toString();
     }
 
-    public String getHash() {
+    public int getHash() {
         return hash;
     }
 

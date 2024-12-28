@@ -6,15 +6,15 @@ import http.request.InvalidRequestException;
 import http.request.Request;
 
 public class GetReq extends Request {
-    private String hash;
+    private int hash;
 
-    public GetReq(String hash) {
-        this.hash = hash;
+    public GetReq(String hash) throws InvalidRequestException {
+        this.hash = parseInt(hash);
     }
 
     @Override
     public void validate() throws InvalidRequestException {
-        if (hash.isEmpty()) {
+        if (hash == 0) {
             throw new InvalidRequestException("invalid hash");        
         }
     }
@@ -26,7 +26,7 @@ public class GetReq extends Request {
         return obj.toString();
     }
 
-    public String getHash() {
+    public int getHash() {
         return hash;
     }
 }
