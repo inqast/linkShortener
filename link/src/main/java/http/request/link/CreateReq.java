@@ -1,18 +1,21 @@
 package http.request.link;
 
+import java.util.Date;
 import java.util.UUID;
 
 import org.json.JSONObject;
 
 import http.request.InvalidRequestException;
+import http.request.Keys;
 import http.request.Request;
 
 public class CreateReq extends Request {
     private String link;
     private UUID user;
     private int limit;
+    private Date deadline;
 
-    public CreateReq(String body) {
+    public CreateReq(String body) throws InvalidRequestException {
         JSONObject obj;
         try {
             obj = new JSONObject(body);
@@ -21,9 +24,10 @@ public class CreateReq extends Request {
         }
         
 
-        link = parseString(obj, "link");
-        limit = parseInt(obj,"limit");
-        user = parseUUID(obj,"user");
+        link = parseString(obj, Keys.LINK);
+        limit = parseInt(obj, Keys.LIMIT);
+        user = parseUUID(obj,Keys.USER);
+        deadline = parseDate(obj, Keys.DEADLINE);
     }
 
     @Override
@@ -54,5 +58,9 @@ public class CreateReq extends Request {
 
     public UUID getUser() {
         return user;
+    }
+
+    public Date getDeadline() {
+        return deadline;
     }
 }

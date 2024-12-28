@@ -12,8 +12,8 @@ import org.json.JSONObject;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-import service.exception.AcessException;
-import service.exception.NotFoundException;
+import domain.exception.AccessException;
+import domain.exception.NotFoundException;
 
 public abstract class Handler implements HttpHandler {
     protected final String emptyResult = "";
@@ -26,7 +26,7 @@ public abstract class Handler implements HttpHandler {
             processOK(t, handleMethods(t));
         } catch (NotFoundException e) {
             processNotFound(t);
-        } catch (AcessException e) {
+        } catch (AccessException e) {
             processAcessDenied(t);
         } catch (Exception e) {
             processError(t, e.getMessage());

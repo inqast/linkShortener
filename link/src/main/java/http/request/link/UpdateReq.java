@@ -1,19 +1,22 @@
 package http.request.link;
 
+import java.util.Date;
 import java.util.UUID;
 
 import org.json.JSONObject;
 
 import http.request.InvalidRequestException;
+import http.request.Keys;
 import http.request.Request;
 
 public class UpdateReq extends Request {
-    private String hash;
+    private int hash;
     private String link;
     private UUID user;
     private int limit;
+    private Date deadline;
 
-    public UpdateReq(String body) {
+    public UpdateReq(String body) throws InvalidRequestException {
         JSONObject obj;
         try {
             obj = new JSONObject(body);
@@ -21,16 +24,17 @@ public class UpdateReq extends Request {
             return;
         }
         
-        hash = parseString(obj, "hash");
-        link = parseString(obj, "link");
-        limit = parseInt(obj,"limit");
-        user = parseUUID(obj,"user");
+        hash = parseInt(obj, Keys.HASH);
+        link = parseString(obj, Keys.LINK);
+        limit = parseInt(obj, Keys.LIMIT);
+        user = parseUUID(obj,Keys.USER);
+        deadline = parseDate(obj, Keys.DEADLINE);
     }
 
     @Override
     public void validate() throws InvalidRequestException {
-        if (link.isEmpty()) {
-            throw new InvalidRequestException("invalid link");
+        if (hash == 0) {
+            throw new InvalidRequestException("invalid hash");
         }
 
         if (user == null) {
@@ -45,7 +49,7 @@ public class UpdateReq extends Request {
         return obj.toString();
     }
 
-    public String getHash() {
+    public int getHash() {
         return hash;
     }
 
@@ -59,5 +63,9 @@ public class UpdateReq extends Request {
 
     public UUID getUser() {
         return user;
+    }
+
+    public Date getDeadline() {
+        return deadline;
     }
 }
