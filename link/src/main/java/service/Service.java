@@ -3,6 +3,8 @@ package service;
 import java.util.Date;
 import java.util.UUID;
 
+import config.IConfig;
+import config.Keys;
 import domain.exception.AccessException;
 import domain.link.Link;
 import repo.ILinkRepo;
@@ -10,17 +12,21 @@ import repo.ILinkRepo;
 public class Service implements IService {
     private ILinkRepo repo;
     private IHash hasher;
+    private IConfig cfg;
 
     private final long MilliseconsInDay = 86400000;
 
-    public Service(ILinkRepo repo, IHash hasher) {
+    public Service(ILinkRepo repo, IHash hasher, IConfig cfg) {
         this.repo = repo;
         this.hasher = hasher;
+        this.cfg = cfg;
     }
 
     @Override
     public int create(String link, UUID user, int limit, Date userDeadline, Date todayDate) throws Exception {
-        Link obj = new Link(link, user, new Date(todayDate.getTime() + 7 * MilliseconsInDay));
+        Date deadline =  new Date(todayDate.getTime() + cfg.getIntValue(Keys.DAYS_BEFORE_DEADLINE) * MilliseconsInDay);
+
+        Link obj = new Link(link, user, deadline);
 
         obj.updateLimit(limit);
         obj.updateDeadline(todayDate, userDeadline);
