@@ -1,0 +1,1 @@
+Зависимости Docker, JDK, Maven

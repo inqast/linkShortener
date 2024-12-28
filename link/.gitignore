@@ -1,2 +1,3 @@
 db.env
 service.env
+flyway.conf
