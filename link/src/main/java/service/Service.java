@@ -1,5 +1,6 @@
 package service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -71,6 +72,20 @@ public class Service implements IService {
 
     @Override
     public List<Link> index(UUID user) throws Exception {
-        return repo.index(user);
+        return repo.indexForUser(user);
+    }
+
+    @Override
+    public void cleanUp(Date todayDate) throws Exception {
+        List<Link> links = repo.index();
+
+        ArrayList<Integer> hashesToDelete = new ArrayList<>();
+        for (Link link : links) {
+            if (!link.isActual(todayDate)) {
+                hashesToDelete.add(link.getHash());
+            }
+        }
+
+        repo.cleanUp(hashesToDelete);
     }
 }

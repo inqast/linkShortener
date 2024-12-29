@@ -1,5 +1,6 @@
 package repo.link;
 
+import java.sql.Array;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -22,7 +23,36 @@ public class LinkRepo implements ILinkRepo {
     }
 
     @Override
-    public List<Link> index(UUID user) throws Exception {
+    public List<Link> index() throws Exception {
+        String query = "SELECT hash, link, owner, usages_count, usages_limit, deadline FROM links";
+        
+        try (PreparedStatement statement = con.prepareStatement(query)) {
+            if (!statement.execute()) {
+                throw new NotFoundException("links not found");
+            }
+
+            ResultSet resultSet = statement.getResultSet();
+            ArrayList<Link> links = new ArrayList<>();
+        
+            while (resultSet.next()) {
+                Link link = new Link(
+                    resultSet.getInt(Keys.HASH),
+                    resultSet.getString(Keys.LINK),
+                    UUID.fromString(resultSet.getString(Keys.OWNER)),
+                    resultSet.getInt(Keys.USAGES_COUNT),
+                    resultSet.getInt(Keys.USAGES_LIMIT),
+                    resultSet.getDate(Keys.DEADLINE)
+                );
+
+                links.add(link);
+            }            
+
+            return links;
+        }
+    }
+
+    @Override
+    public List<Link> indexForUser(UUID user) throws Exception {
         String query = "SELECT hash, link, owner, usages_count, usages_limit, deadline FROM links WHERE owner = UUID(?)";
         
         try (PreparedStatement statement = con.prepareStatement(query)) {
@@ -141,6 +171,23 @@ public class LinkRepo implements ILinkRepo {
         
         try (PreparedStatement statement = con.prepareStatement(query)) {
             statement.setInt(1, hash);
+
+            statement.execute();
+
+            if (statement.getUpdateCount() == 0) {
+                throw new NotFoundException("link not found");
+            }
+        }
+    }
+
+    @Override
+    public void cleanUp(List<Integer> hashes) throws Exception {
+        String query = "DELETE from links WHERE hash IN ?";
+        
+        try (PreparedStatement statement = con.prepareStatement(query)) {
+            Array arr = con.createArrayOf("int" , hashes.toArray(new Integer[0]));
+
+            statement.setArray(1, arr);
 
             statement.execute();
 
