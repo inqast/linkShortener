@@ -118,4 +118,16 @@ public class Link {
 
         return isUpdated;
     }
+
+    public boolean isActual(Date todayDate) {
+        if (todayDate.after(deadline)) {
+            return false;
+        }
+
+        if (usages > limit) {
+            return false;
+        }
+
+        return true;
+    }
 }

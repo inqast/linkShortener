@@ -7,6 +7,7 @@ import java.util.UUID;
 import config.IConfig;
 import config.Keys;
 import domain.exception.AccessException;
+import domain.exception.NotFoundException;
 import domain.link.Link;
 import repo.ILinkRepo;
 
@@ -37,8 +38,14 @@ public class Service implements IService {
     }
 
     @Override
-    public Link read(int hash) throws Exception {
-        return repo.read(hash, false);
+    public Link read(int hash, Date todayDate) throws Exception {
+        Link link = repo.read(hash, false);
+
+        if (!link.isActual(todayDate)) {
+            throw new NotFoundException("link expired");
+        }
+
+        return link;
     }
 
     @Override

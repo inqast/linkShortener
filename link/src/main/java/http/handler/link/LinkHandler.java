@@ -1,7 +1,5 @@
 package http.handler.link;
 
-import java.util.Date;
-
 import com.sun.net.httpserver.HttpExchange;
 
 import domain.link.Link;
@@ -41,7 +39,7 @@ public class LinkHandler extends Handler {
         GetReq req = new GetReq(getPathParam(t.getRequestURI(), 2));
         req.validate();
     
-        Link link = service.read(req.getHash());
+        Link link = service.read(req.getHash(), getCurrentDate());
 
         GetResp resp = new GetResp(link.getLink());
 
@@ -52,7 +50,7 @@ public class LinkHandler extends Handler {
         CreateReq req = new CreateReq(readBody(t));
         req.validate();
 
-        int hash = service.create(req.getLink(), req.getUser(), req.getLimit(), req.getDeadline(), new Date());
+        int hash = service.create(req.getLink(), req.getUser(), req.getLimit(), req.getDeadline(), getCurrentDate());
 
         CreateResp resp = new CreateResp(hash, req.getUser());
 
@@ -63,7 +61,7 @@ public class LinkHandler extends Handler {
         UpdateReq req = new UpdateReq(readBody(t));
         req.validate();
 
-        service.update(req.getHash(), req.getLink(), req.getUser(), req.getLimit(), req.getDeadline(), new Date());
+        service.update(req.getHash(), req.getLink(), req.getUser(), req.getLimit(), req.getDeadline(), getCurrentDate());
 
         return emptyResult;
     }

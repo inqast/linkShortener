@@ -6,7 +6,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.Calendar;
+import java.util.Date;
 
+import org.apache.commons.lang3.time.DateUtils;
 import org.json.JSONObject;
 
 import com.sun.net.httpserver.HttpExchange;
@@ -100,6 +103,10 @@ public abstract class Handler implements HttpHandler {
         isr.close();
 
         return buf.toString();
+    }
+
+    protected static Date getCurrentDate() {
+        return DateUtils.truncate(new Date(), Calendar.DAY_OF_MONTH);
     }
 
     public static class Error {
