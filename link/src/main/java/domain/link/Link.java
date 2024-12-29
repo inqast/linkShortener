@@ -27,6 +27,15 @@ public class Link {
         this.deadline = deadline;
     }
 
+    public Link(int hash, String link, UUID owner, int usages, int limit, Date deadline) {
+        this.hash = hash;
+        this.link = link;
+        this.owner = owner;
+        this.usages = usages;
+        this.limit = limit;
+        this.deadline = deadline;
+    }
+
     public int getHash() {
         return hash;
     }
@@ -80,9 +89,9 @@ public class Link {
     }
 
     public boolean validateDeadline(Date todayDate, Date deadline) {
-        return this.deadline.getTime() != 0 
-        && this.deadline.after(todayDate) 
-        && this.deadline.compareTo(this.deadline) < 0;
+        return deadline != null && deadline.getTime() != 0 
+        && deadline.after(todayDate) 
+        && (this.deadline == null || deadline.compareTo(this.deadline) < 0);
     }
 
     public boolean merge(Link link, Date todayDate) throws AccessException {

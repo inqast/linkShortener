@@ -9,7 +9,8 @@ public class Config implements IConfig {
     private JSONObject cfg;
 
     public Config(byte[] configData) throws JSONException {
-        cfg = new JSONObject(configData);
+        String str = new String(configData);
+        cfg = new JSONObject(str);
     }
 
     @Override

@@ -1,11 +1,10 @@
 package http.handler.dock;
 
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 
 import http.handler.Handler;
 
-public class DocsHandler extends Handler implements HttpHandler {
+public class DocsHandler extends Handler {
     @Override
     public String handleMethods(HttpExchange t) throws Exception {
         switch (t.getRequestMethod()) {

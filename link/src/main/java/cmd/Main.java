@@ -31,7 +31,6 @@ public class Main {
             String user = System.getenv("DB_USER");
             String passwd = System.getenv("DB_PASSWD");
 
-            Class.forName("org.postgresql.Driver");
             con = DriverManager.getConnection(url, user, passwd);
 
             server = HttpServer.create(new InetSocketAddress(8000), 0);

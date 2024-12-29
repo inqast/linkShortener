@@ -1,15 +1,17 @@
 package http.resonse.link;
 
+import java.util.List;
+
 import org.json.JSONObject;
 
 import domain.link.Link;
 import http.resonse.Response;
 
 public class IndexResp extends Response {
-    private Link[] links;
+    private List<Link> links;
     
 
-    public IndexResp(Link[] links) {
+    public IndexResp(List<Link> links) {
         this.links = links;
     }
 
@@ -20,7 +22,7 @@ public class IndexResp extends Response {
         return obj.toString();
     }
 
-    public Link[] getLinks() {
+    public List<Link> getLinks() {
         return links;
     }
 }

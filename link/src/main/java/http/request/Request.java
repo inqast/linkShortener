@@ -49,15 +49,23 @@ public abstract class Request {
         }
     }
 
+    protected UUID parseUUID(String value) throws InvalidRequestException {
+        try {            
+            return UUID.fromString(value);
+        } catch (Exception e) {
+            throw new InvalidRequestException("wrong UUID format");
+        }
+    }
+
     protected Date parseDate(JSONObject obj, String key) throws InvalidRequestException {
         try {
             String s = obj.getString(key);
             
-            return DateFormat.getInstance().parse(s);
+            return DateFormat.getDateInstance(DateFormat.SHORT).parse(s);
         } catch (JSONException e) {
             return null;
         } catch (Exception e) {
-            throw new InvalidRequestException("wrong date format, yyyy-mm-dd expected");
+            throw new InvalidRequestException("wrong date format, dd/mm/yy expected");
         }
     }
 }

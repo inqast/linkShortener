@@ -1,7 +1,8 @@
 package http.handler.link;
 
+import java.util.List;
+
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 
 import domain.link.Link;
 import http.handler.Handler;
@@ -9,7 +10,7 @@ import http.request.link.IndexReq;
 import http.resonse.link.IndexResp;
 import service.IService;
 
-public class IndexHandler extends Handler implements HttpHandler {
+public class IndexHandler extends Handler {
      private IService service;
 
     public IndexHandler(IService service) {
@@ -30,7 +31,7 @@ public class IndexHandler extends Handler implements HttpHandler {
         IndexReq req = new IndexReq(getPathParam(t.getRequestURI(), 2));
         req.validate();
 
-        Link[] links = service.index(req.getUser());
+        List<Link> links = service.index(req.getUser());
 
         IndexResp resp = new IndexResp(links);
 

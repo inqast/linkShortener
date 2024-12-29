@@ -1,6 +1,7 @@
 package service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import config.IConfig;
@@ -14,7 +15,7 @@ public class Service implements IService {
     private IHash hasher;
     private IConfig cfg;
 
-    private final long MilliseconsInDay = 86400000;
+    private static final long MILLISECONDS_IN_DAY = 86400000;
 
     public Service(ILinkRepo repo, IHash hasher, IConfig cfg) {
         this.repo = repo;
@@ -24,7 +25,7 @@ public class Service implements IService {
 
     @Override
     public int create(String link, UUID user, int limit, Date userDeadline, Date todayDate) throws Exception {
-        Date deadline =  new Date(todayDate.getTime() + cfg.getIntValue(Keys.DAYS_BEFORE_DEADLINE) * MilliseconsInDay);
+        Date deadline =  new Date(todayDate.getTime() + cfg.getIntValue(Keys.DAYS_BEFORE_DEADLINE) * MILLISECONDS_IN_DAY);
 
         Link obj = new Link(link, user, deadline);
 
@@ -32,20 +33,18 @@ public class Service implements IService {
         obj.updateDeadline(todayDate, userDeadline);
         obj.setHash(hasher.getHash(obj));
 
-        int hash = repo.create(obj);
-
-        return hash;
+        return repo.create(obj);
     }
 
     @Override
     public Link read(int hash) throws Exception {
-        return repo.read(hash);
+        return repo.read(hash, false);
     }
 
     @Override
     public void update(int hash, String link, UUID user, int limit, Date userDeadline, Date todayDate) throws Exception {
         Link newLink = new Link(hash, link, user, limit, userDeadline);
-        Link linkForUpdate = repo.read(hash);
+        Link linkForUpdate = repo.read(hash, true);
        
         linkForUpdate.merge(newLink, todayDate);
 
@@ -54,17 +53,17 @@ public class Service implements IService {
 
     @Override
     public void delete(int hash, UUID user) throws Exception {
-        Link link = repo.read(hash);
+        Link link = repo.read(hash, true);
 
-        if (link.getOwner() != user) {
-            throw new AccessException("wronf user");
+        if (!link.getOwner().equals(user)) {
+            throw new AccessException("wrong user");
         }
 
         repo.delete(hash);
     }
 
     @Override
-    public Link[] index(UUID user) throws Exception {
+    public List<Link> index(UUID user) throws Exception {
         return repo.index(user);
     }
 }

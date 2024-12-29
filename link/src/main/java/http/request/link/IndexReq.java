@@ -5,22 +5,13 @@ import java.util.UUID;
 import org.json.JSONObject;
 
 import http.request.InvalidRequestException;
-import http.request.Keys;
 import http.request.Request;
 
 public class IndexReq extends Request {
     private UUID user;
 
-    public IndexReq(String body) throws InvalidRequestException {
-        JSONObject obj;
-        try {
-            obj = new JSONObject(body);
-        } catch (Exception e) {
-            return;
-        }
-        
-
-        user = parseUUID(obj, Keys.USER);
+    public IndexReq(String user) throws InvalidRequestException {
+        this.user = parseUUID(user);
     }
 
     @Override
