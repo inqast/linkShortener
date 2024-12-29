@@ -124,7 +124,7 @@ public class Link {
             return false;
         }
 
-        if (usages > limit) {
+        if (limit > 0 && usages > limit) {
             return false;
         }
 

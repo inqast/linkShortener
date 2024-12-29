@@ -1,5 +1,8 @@
 build:
-	cd link && mvn package
+	cd link && mvn clean package
+
+build-cli:
+	cd cli && go build -o bin/cli main.go
 
 migrate:
 	cd link &&	mvn -Dflyway.configFiles=flyway.conf flyway:migrate

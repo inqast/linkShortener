@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.util.logging.Logger;
 
 import com.sun.net.httpserver.HttpServer;
 
@@ -19,12 +20,14 @@ import service.Service;
 
 public class Main {
     public static void main(String[] args) {
+        Logger logger = Logger.getLogger("Main");
+
         HttpServer server;
         Config cfg;
         Connection con;
 
         try {
-            byte[] configContent = Files.readAllBytes(Paths.get("link/config.json"));
+            byte[] configContent = Files.readAllBytes(Paths.get("./config.json"));
             cfg = new Config(configContent);
 
             String url = System.getenv("DB_URL");
@@ -35,7 +38,7 @@ public class Main {
 
             server = HttpServer.create(new InetSocketAddress(8000), 0);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            logger.severe(e.getMessage());
             
             return;
         }
