@@ -3,6 +3,8 @@ package cmd;
 import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.DriverManager;
 
 import com.sun.net.httpserver.HttpServer;
 
@@ -18,24 +20,28 @@ import service.Service;
 public class Main {
     public static void main(String[] args) {
         HttpServer server;
-
-        try {
-            server = HttpServer.create(new InetSocketAddress(8000), 0);
-        } catch (Exception e) {
-            return;
-        }
-
         Config cfg;
+        Connection con;
+
         try {
-            byte[] configContent = Files.readAllBytes(Paths.get("config.json"));
+            byte[] configContent = Files.readAllBytes(Paths.get("link/config.json"));
             cfg = new Config(configContent);
+
+            String url = System.getenv("DB_URL");
+            String user = System.getenv("DB_USER");
+            String passwd = System.getenv("DB_PASSWD");
+
+            Class.forName("org.postgresql.Driver");
+            con = DriverManager.getConnection(url, user, passwd);
+
+            server = HttpServer.create(new InetSocketAddress(8000), 0);
         } catch (Exception e) {
             System.out.println(e.getMessage());
             
             return;
         }
         
-        LinkRepo repo = new LinkRepo();
+        LinkRepo repo = new LinkRepo(con);
         Hash hasher = new Hash();
         Service service = new Service(repo, hasher, cfg);
 

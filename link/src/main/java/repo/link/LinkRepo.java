@@ -1,11 +1,18 @@
 package repo.link;
 
+import java.sql.Connection;
 import java.util.UUID;
 
 import domain.link.Link;
 import repo.ILinkRepo;
 
 public class LinkRepo implements ILinkRepo {
+    private Connection con;
+
+    public LinkRepo(Connection con) {
+        this.con = con;
+    }
+
     @Override
     public Link[] index(UUID user) throws Exception {
         throw new Exception("not implemented");
