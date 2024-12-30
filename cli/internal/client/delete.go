@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	"encoding/json"
-	"github.com/inqast/cli/internal/short"
+	"github.com/inqast/cli/internal/link"
 )
 
 type deleteReq struct {
@@ -18,7 +18,7 @@ type deleteReq struct {
 func (s *service) Delete(
 	shortLink string, user string,
 ) error {
-	hash, err := short.GetHashFromShortLink(shortLink, s.shortLinkBase)
+	hash, err := link.GetHashFromShortLink(shortLink, s.shortLinkBase)
 	if err != nil {
 		return err
 	}

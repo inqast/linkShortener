@@ -7,7 +7,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/inqast/cli/internal/short"
+	"github.com/inqast/cli/internal/link"
 )
 
 type updateReq struct {
@@ -23,7 +23,7 @@ func (s *service) Update(
 	targetLink string,
 	limit string, deadline string,
 ) error {
-	hash, err := short.GetHashFromShortLink(shortLink, s.shortLinkBase)
+	hash, err := link.GetHashFromShortLink(shortLink, s.shortLinkBase)
 	if err != nil {
 		return err
 	}

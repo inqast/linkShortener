@@ -5,7 +5,7 @@ import (
 	"io"
 
 	"encoding/json"
-	"github.com/inqast/cli/internal/short"
+	linkUtils "github.com/inqast/cli/internal/link"
 )
 
 type getResp struct {
@@ -13,7 +13,7 @@ type getResp struct {
 }
 
 func (s *service) Get(link string) (string, error) {
-	hash, err := short.GetHashFromShortLink(link, s.shortLinkBase)
+	hash, err := linkUtils.GetHashFromShortLink(link, s.shortLinkBase)
 	if err != nil {
 		return "", err
 	}

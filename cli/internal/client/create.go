@@ -6,7 +6,7 @@ import (
 	"io"
 
 	"encoding/json"
-	"github.com/inqast/cli/internal/short"
+	linkUtils "github.com/inqast/cli/internal/link"
 )
 
 type createReq struct {
@@ -56,5 +56,5 @@ func (s *service) Create(
 		return "", user, err
 	}
 
-	return short.CreateShortLink(s.shortLinkBase, r.Hash), r.User, nil
+	return linkUtils.CreateShortLink(s.shortLinkBase, r.Hash), r.User, nil
 }
