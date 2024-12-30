@@ -2,13 +2,14 @@ package short
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 )
 
 func GetHashFromShortLink(shortLink string, linkBase string) (int, error) {
-	strings.TrimPrefix(shortLink, "http://")
-	strings.TrimPrefix(shortLink, "https://")
+	shortLink = strings.TrimPrefix(shortLink, "http://")
+	shortLink = strings.TrimPrefix(shortLink, "https://")
 
 	if len(shortLink) <= len(linkBase) {
 		return 0, errors.New("incorrect link")
@@ -25,4 +26,8 @@ func GetHashFromShortLink(shortLink string, linkBase string) (int, error) {
 	}
 
 	return hash, nil
+}
+
+func CreateShortLink(linkBase string, hash int) string {
+	return fmt.Sprintf("http://%s/%d", linkBase, hash)
 }

@@ -1,11 +1,16 @@
 package cmd
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
+)
+
+const (
+	targetKey   = "target"
+	userKey     = "user"
+	limitKey    = "limit"
+	deadlineKey = "deadline"
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -25,22 +30,9 @@ func Execute() {
 	}
 }
 
-func initConfig() {
-	viper.AddConfigPath(".")
-	viper.SetConfigName("config")
-	viper.SetConfigType("yaml")
-
-	viper.AutomaticEnv()
-
-	if err := viper.ReadInConfig(); err != nil {
-		fmt.Println("Using config file faled:", err.Error())
-	}
-}
-
 func init() {
+	rootCmd.PersistentFlags().String(userKey, "", "UUID of user for request")
 
-}
-
-func init() {
-	cobra.OnInitialize(initConfig)
+	rootCmd.PersistentFlags().String(limitKey, "", "limit usages for link")
+	rootCmd.PersistentFlags().String(deadlineKey, "", "deadline for link, format dd/mm/yy")
 }

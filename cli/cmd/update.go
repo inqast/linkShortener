@@ -5,29 +5,48 @@ package cmd
 
 import (
 	"fmt"
+	"net/http"
 
+	"github.com/inqast/cli/internal"
+	"github.com/inqast/cli/internal/client"
 	"github.com/spf13/cobra"
 )
 
 // updateCmd represents the update command
 var updateCmd = &cobra.Command{
-	Use:   "update",
-	Short: "update created link, requires login",
+	Use:       "update",
+	Short:     "update created link, requires login",
+	ValidArgs: []string{"shortLink"},
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("update called")
+		if len(args) != 1 {
+			fmt.Printf("missing argument: shortLink")
+			return
+		}
+
+		user, _ := cmd.Flags().GetString(userKey)
+
+		target, _ := cmd.Flags().GetString(targetKey)
+		limit, _ := cmd.Flags().GetString(limitKey)
+		deadline, _ := cmd.Flags().GetString(deadlineKey)
+
+		c := client.New(internal.LinkBase, internal.ServerAddr, &http.Client{})
+
+		err := c.Update(
+			args[0],
+			user,
+			target,
+			limit,
+			deadline,
+		)
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(updateCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// updateCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// updateCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	updateCmd.PersistentFlags().String(targetKey, "", "target link to redirect")
 }

@@ -1,33 +1,47 @@
-/*
-Copyright © 2024 NAME HERE <EMAIL ADDRESS>
-*/
 package cmd
 
 import (
 	"fmt"
+	"net/http"
 
+	"github.com/inqast/cli/internal"
+	"github.com/inqast/cli/internal/client"
 	"github.com/spf13/cobra"
 )
 
 // createCmd represents the create command
 var createCmd = &cobra.Command{
-	Use:   "create",
-	Short: "create short link",
+	Use:       "create",
+	Short:     "create short link",
+	ValidArgs: []string{"originalLink"},
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("create called")
+		if len(args) != 1 {
+			fmt.Printf("missing argument: originalLink")
+			return
+		}
+
+		user, _ := cmd.Flags().GetString(userKey)
+		limit, _ := cmd.Flags().GetString(limitKey)
+		deadline, _ := cmd.Flags().GetString(deadlineKey)
+
+		c := client.New(internal.LinkBase, internal.ServerAddr, &http.Client{})
+
+		link, user, err := c.Create(
+			args[0],
+			user,
+			limit,
+			deadline,
+		)
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+
+		fmt.Println("Link:", link)
+		fmt.Println("User:", user)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(createCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// createCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// createCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

@@ -1,33 +1,39 @@
-/*
-Copyright © 2024 NAME HERE <EMAIL ADDRESS>
-*/
 package cmd
 
 import (
 	"fmt"
+	"net/http"
 
+	"github.com/inqast/cli/internal"
+	"github.com/inqast/cli/internal/client"
 	"github.com/spf13/cobra"
 )
 
 // indexCmd represents the index command
 var indexCmd = &cobra.Command{
-	Use:   "index",
-	Short: "get list of created links for user, requires login",
+	Use:       "index",
+	Short:     "get list of created links for user, requires login",
+	ValidArgs: []string{"userUUID"},
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("index called")
+		if len(args) != 1 {
+			fmt.Printf("missing argument: userUUID")
+			return
+		}
+
+		c := client.New(internal.LinkBase, internal.ServerAddr, &http.Client{})
+
+		links, err := c.GetAll(args[0])
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+
+		for _, link := range links {
+			fmt.Printf("%+v\n", link)
+		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(indexCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// indexCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// indexCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
